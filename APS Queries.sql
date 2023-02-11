@@ -1,11 +1,11 @@
 /*************************************************************
 **************************************************************
-** Group: DBDogs											**
+** Group 2: DBDogs											**
 ** Date Modified: 2/10/23									**
 ** Course: TCSS 445											**
 ** Database Project											**
 **															**
-** Auto Parts Store queries (APS)							**
+** Auto Parts Store Queries (APS)							**
 **															**
 ** This database supports APS inventory	management and		**
 ** vendor information.										**

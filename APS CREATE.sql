@@ -1,12 +1,11 @@
 /*************************************************************
 **************************************************************
-** Author: Nelson Nyland, Arashpreet S. Pandher,			**
-** Aman Vahora, Steven Le									**
+** Group 2: DBDogs											**
 ** Date Modified: 2/9/23									**
 ** Course: TCSS 445											**
 ** Database Project											**
 **															**
-** Auto Parts Store Schema (APS)							**
+** Auto Parts Store CREATE (APS)							**
 **															**
 ** This database supports APS inventory	management and		**
 ** vendor information.										**
