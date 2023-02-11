@@ -5,7 +5,7 @@
 ** Course: TCSS 445											**
 ** Database Project											**
 **															**
-** Auto Parts Store Schema (APS)							**
+** Auto Parts Store CREATE (APS)							**
 **															**
 ** This database supports APS inventory	management and		**
 ** vendor information.										**
