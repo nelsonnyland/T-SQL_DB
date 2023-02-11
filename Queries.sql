@@ -1,3 +1,18 @@
+/*************************************************************
+**************************************************************
+** Group: DBDogs											**
+** Date Modified: 2/10/23									**
+** Course: TCSS 445											**
+** Database Project											**
+**															**
+** Auto Parts Store queries (APS)							**
+**															**
+** This database supports APS inventory	management and		**
+** vendor information.										**
+**															**
+**************************************************************
+*************************************************************/
+
 -- SQL Query 1) The purpose of this query is to join the auto, part, and vendor tables using their respective ID's. The expected result is a join of these 3 tables
 SELECT *
 FROM [AUTO]
@@ -56,7 +71,7 @@ FROM VENDOR
 GROUP BY VENDOR.VendorName
 --SQL QUERY 10) b) purpose is for users to find a vendors avg quantity for parts and merchandise. Can be useful to see if a vendor is stocked up on parts and merch.
 --c) Expected results is join on VENDOR, PART, MERCHANDISE and a table that has vendorname and the avg partqty plus merchqty.
-SELECT VENDOR.VendorName, AVG(PART.PartQty + MERCHANDISE.MerchQty) AS "Average Quantity"
+SELECT VENDOR.VendorName, AVG(PART.PartQty + MERCHANDISE.MerchQty / 2) AS "Average Quantity"
 FROM VENDOR
     JOIN PART as part
     ON VENDOR.ID = part.VendorID
