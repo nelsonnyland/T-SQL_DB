@@ -7,8 +7,11 @@
 **															**
 ** Auto Parts Store Schema (APS)							**
 **															**
-** This database supports APS inventory	management and		**
-** vendor information.										**
+** Description:												**
+** * This is a MS T-SQL document using MS SQL Server and	**
+**   MSSMS as a DBMS.										**
+** * This database supports auto parts inventory management	**
+**   and related vendor information.						**
 **															**
 **************************************************************
 *************************************************************/
