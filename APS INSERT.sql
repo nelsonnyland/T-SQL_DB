@@ -28,7 +28,7 @@ VALUES
     ('Ford', 'Mustang', 2021, '5.0L V8'),
     ('Chevrolet', 'Camaro', 2022, '6.2L V8'),
     ('Nissan', 'Altima', 2019, '2.5L 4-Cylinder'),
-	('Jeep', 'Wrangler', 2021, '2.0L 4-Cylinder Turbo'),
+	('Jeep', 'Wrangler', 2021, '2.0L 4-Cylinder Turbo') ,
     ('Dodge', 'Charger', 2020, '6.4L V8'),
     ('Tesla', 'Model S', 2021, 'Dual Motor All-Wheel Drive'),
     ('Audi', 'A4', 2022, '2.0L 4-Cylinder Turbo')
