@@ -107,7 +107,7 @@ CREATE TABLE EMPLOYEE
 	,LocID			int				NOT NULL	FOREIGN KEY REFERENCES LOCSITE(ID)  ON DELETE NO ACTION		ON UPDATE NO ACTION
 	,EmpFName		varchar(50)		NOT NULL	CHECK(LEN(EmpFName) > 2)
 	,EmpLName		varchar(50)		NOT NULL	CHECK(LEN(EmpLName) > 2)
-	,EmpPhone		varchar(15)		NOT NULL	UNIQUE CHECK(EmpPhone LIKE '([0-9][0-9][0-9])[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]')
+	,EmpPhone		varchar(15)		NOT NULL	UNIQUE CHECK(EmpPhone LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]')
 	,EmpStreet		varchar(50)		NOT NULL	CHECK(LEN(EmpStreet) > 2)
 	,EmpCity		varchar(15)		NOT NULL	CHECK(LEN(EmpCity) > 2)
 	,EmpState		char(2)			NOT NULL	CHECK(EmpState LIKE '[A-Z][A-Z]')
