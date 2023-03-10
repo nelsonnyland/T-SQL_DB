@@ -72,12 +72,50 @@ FROM VENDOR
     JOIN MERCHANDISE
     ON VENDOR.ID = MERCHANDISE.VendorID
 GROUP BY VENDOR.VendorName
---SQL QUERY 10) b) purpose is for users to find a vendors avg quantity for parts and merchandise. Can be useful to see if a vendor is stocked up on parts and merch.
---c) Expected results is join on VENDOR, PART, MERCHANDISE and a table that has vendorname and the avg partqty plus merchqty.
-SELECT VENDOR.VendorName, AVG(PART.PartQty + MERCHANDISE.MerchQty / 2) AS "Average Quantity"
+--SQL QUERY 10) b) purpose is for users to find a vendors avg price for parts and Stock. Can be useful to see if average price.
+--c) Expected results is join on VENDOR, PART, STOCK and a table that has avg price.
+SELECT AVG(STOCK.Price / 2) AS "Average Price"
 FROM VENDOR
     JOIN PART as part
     ON VENDOR.ID = part.VendorID
-    JOIN MERCHANDISE
-    ON VENDOR.ID = MERCHANDISE.VendorID
-GROUP BY VENDOR.VendorName
+    JOIN STOCK
+    ON PART.StockID = STOCK.ID
+
+--query 10
+SELECT l.LocName, COUNT(e.ID) AS NumEmployees
+FROM LOCSITE l
+LEFT JOIN EMPLOYEE e ON l.ID = e.LocID
+GROUP BY l.LocName
+
+--QUERY 
+SELECT V.VendorName, VE.VehMake, VE.VehModel, VE.VehYear, S.Qty, S.Price, L.LocName, L.LocStreet, L.LocCity, L.LocState
+FROM STOCK S
+JOIN INVOICE I ON S.InvoiceID = I.ID
+JOIN VEHICLE VE ON I.VendorID = VE.VendorID
+JOIN VENDOR V ON VE.VendorID = V.ID
+JOIN LOCSITE L ON S.LocID = L.ID;
+
+
+SELECT V.VendorName, SUM(S.Price * S.Qty) AS TotalSales
+FROM VENDOR V
+INNER JOIN VEHICLE VEH ON V.ID = VEH.VendorID
+INNER JOIN PART P ON P.VehID = VEH.ID
+INNER JOIN STOCK S ON S.ID = P.StockID
+WHERE S.InvoiceID IN (
+    SELECT I.ID
+    FROM INVOICE I
+    WHERE I.InvoiceDate BETWEEN '2022-01-01' AND '2022-12-31'
+)
+GROUP BY V.VendorName
+ORDER BY TotalSales DESC;
+
+
+SELECT p.PartName, p.PartDesc, v.VehMake, v.VehModel, v.VehYear, 
+       (SELECT TOP 1 s.Price 
+        FROM STOCK s 
+        WHERE s.ID = p.StockID 
+        ORDER BY s.Price DESC) AS 'Highest Price'
+FROM PART p
+INNER JOIN VEHICLE v ON p.VehID = v.ID
+WHERE p.PartName LIKE '%filter%'
+ORDER BY v.VehYear ASC;
