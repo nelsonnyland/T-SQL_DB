@@ -19,8 +19,6 @@
 USE APS
 GO
 
-
-
 INSERT INTO VENDOR 
 (VendorName)
 VALUES
