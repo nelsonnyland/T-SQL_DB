@@ -16,78 +16,21 @@
 **************************************************************
 *************************************************************/
 
--- SQL Query 1) The purpose of this query is to join the auto, part, and vendor tables using their respective ID's. The expected result is a join of these 3 tables
-SELECT *
-FROM [AUTO]
-JOIN PART ON [AUTO].ID = PART.AutoID
-JOIN VENDOR ON PART.VendorID = VENDOR.ID
--- SQL Query 2) The purpose of this query is to join auto and part tables using their id's. It then uses a nested query to get the auto years greater than 2010 and group it by automake
--- and number of parts. The expected result is the automake column with its part numbers.
-SELECT AutoMake, COUNT(*) AS NumberOfParts
-FROM AUTO
-INNER JOIN PART ON [AUTO].ID = PART.AutoID
-WHERE AutoMake IN (SELECT AutoMake FROM [AUTO] WHERE AutoYear > 2010)
-GROUP BY AutoMake;
--- SQL Query 3) The purpose of this query is to get the "Toyota" automake. The expected result is the columns in auto table with AutoMake Toyota.
-SELECT *
-FROM [AUTO]
-WHERE [AUTO].AutoMake = (SELECT VENDOR.VendorName
-                    from VENDOR
-                    WHERE VENDOR.VendorName = 'Toyota')
--- SQL Query 4) The purpose of this query is to get the columns from the auto and parts tables along with no matches. The expected result is the output of the full outer join.
-SELECT *
-FROM [AUTO]
-FULL OUTER JOIN PART ON [AUTO].ID = PART.AutoID
--- SQL Query 5) The purpose of this query is to get the names of the merchandise and parts table where the quantity is less than the average for both. The expected result is a combination of these two. 
-SELECT PartName FROM PART
-WHERE PartQty < (SELECT AVG(PartQty) FROM PART)
-UNION 
-SELECT MerchName FROM MERCHANDISE
-WHERE MerchQty < (SELECT AVG(MerchQty) FROM MERCHANDISE) 
---SQL QUERY 6) b) purpose is to get the revenue for the vendors. c) Expected to get columns with vendorname and total revenue for each vendor name.
-SELECT V.VendorName, SUM(P.PartPrice * P.PartQty) + SUM(M.MerchPrice * M.MerchQty) AS Revenue
-FROM VENDOR V
-LEFT JOIN PART P ON V.ID = P.VendorID
-LEFT JOIN MERCHANDISE M ON V.ID = M.VendorID
-GROUP BY V.VendorName
---SQL QUERY 7) b) If you are a car company and you need more than 100 parts for a certain car c) Will do a join on auto and part tables and get automodel with more than 100 car parts.
-SELECT [AUTO].AutoModel
-FROM [AUTO]
-	JOIN PART
-	ON PART.AutoID = AUTO.ID
-WHERE PART.PartQty > 100
---SQL QUERY 8) b) purpose is for users to find parts with prices less than avg price. c) Expected result is join of some of the columns in part and auto table with price less than avg part price
-SELECT P.PartName, P.PartPrice, A.AutoMake, A.AutoModel, A.AutoYear
-FROM PART P 
-INNER JOIN AUTO A ON P.AutoID = A.ID
-WHERE P.PartPrice < (SELECT AVG(PartPrice) FROM PART);
 
 
---SQL QUERY 9) b) purpose is to get average part price and merchandise price for each vendor. Useful when trying to compare price for each vendor. 
--- c) Expected results was to be a join on auto, vendor, and merchandies to create a result table with vendor names and avg pricing for each vendor.
-SELECT VENDOR.VendorName, AVG(PART.PartPrice + MERCHANDISE.MerchPrice / 2) AS "Average Price"
-FROM VENDOR
-    JOIN PART
-    ON VENDOR.ID = PART.VendorID
-    JOIN MERCHANDISE
-    ON VENDOR.ID = MERCHANDISE.VendorID
-GROUP BY VENDOR.VendorName
---SQL QUERY 10) b) purpose is for users to find a vendors avg price for parts and Stock. Can be useful to see if average price.
---c) Expected results is join on VENDOR, PART, STOCK and a table that has avg price.
-SELECT AVG(STOCK.Price / 2) AS "Average Price"
-FROM VENDOR
-    JOIN PART as part
-    ON VENDOR.ID = part.VendorID
-    JOIN STOCK
-    ON PART.StockID = STOCK.ID
+--QUERY 1
+-- Purpose: useful for customer to find the total number of merchandise.
+-- Expected Result: Gives all total quantity of each merchandise item and gives merchandise name, vendor name, and location as well.
+SELECT L.LocName, M.MerchName, V.VendorName, SUM(S.Qty) AS TotalQuantity
+FROM MERCHANDISE M
+INNER JOIN STOCK S ON S.ID = M.StockID
+INNER JOIN LOCSITE L ON L.ID = S.LocID
+INNER JOIN VENDOR V ON V.ID = M.VendorID
+GROUP BY L.LocName, M.MerchName, V.VendorName;
 
---query 10
-SELECT l.LocName, COUNT(e.ID) AS NumEmployees
-FROM LOCSITE l
-LEFT JOIN EMPLOYEE e ON l.ID = e.LocID
-GROUP BY l.LocName
-
---QUERY 
+--QUERY 2
+-- Purpose: This query gives general information for a user on everything.
+-- Expected Result: Gives a table with information on vehicale make, model, year, Stock qty, location name, city, and state.
 SELECT V.VendorName, VE.VehMake, VE.VehModel, VE.VehYear, S.Qty, S.Price, L.LocName, L.LocStreet, L.LocCity, L.LocState
 FROM STOCK S
 JOIN INVOICE I ON S.InvoiceID = I.ID
@@ -95,6 +38,9 @@ JOIN VEHICLE VE ON I.VendorID = VE.VendorID
 JOIN VENDOR V ON VE.VendorID = V.ID
 JOIN LOCSITE L ON S.LocID = L.ID;
 
+--QUERY 3
+-- Purpose: Can be useful to find total sales for a certain vendor. Will allow for customer to see which vendor is good.
+-- Expected Result: Gives a table that has vendors on one side and total sales on other.
 
 SELECT V.VendorName, SUM(S.Price * S.Qty) AS TotalSales
 FROM VENDOR V
@@ -109,6 +55,9 @@ WHERE S.InvoiceID IN (
 GROUP BY V.VendorName
 ORDER BY TotalSales DESC;
 
+--QUERY 4
+-- Purpose: This query retrieves information about parts that have "filter" in their name and the vehicle information. It gets the price for that stock and orders it by price in descending order.
+-- Expected Result: Finds part name that has filter and sorts by price. Displays filter, partDesc, VehMake, Model, Year, and price of part.
 
 SELECT p.PartName, p.PartDesc, v.VehMake, v.VehModel, v.VehYear, 
        (SELECT TOP 1 s.Price 
@@ -119,3 +68,110 @@ FROM PART p
 INNER JOIN VEHICLE v ON p.VehID = v.ID
 WHERE p.PartName LIKE '%filter%'
 ORDER BY v.VehYear ASC;
+
+--Query 5
+-- Purpose: This query retrieves data about the number of parts and merchandise items sold by vendors across all locations
+-- Expected Result:
+SELECT 
+    V.VendorName,
+    L.LocName,
+    COUNT(DISTINCT P.ID) AS PartsCount,
+    COUNT(DISTINCT M.ID) AS MerchandiseCount
+FROM 
+    VENDOR V
+    FULL OUTER JOIN VEHICLE VE ON V.ID = VE.VendorID
+    FULL OUTER JOIN PART P ON VE.ID = P.VehID
+    FULL OUTER JOIN MERCHANDISE M ON V.ID = M.VendorID
+    FULL OUTER JOIN STOCK S ON P.StockID = S.ID OR M.StockID = S.ID
+    FULL OUTER JOIN LOCSITE L ON S.LocID = L.ID
+GROUP BY 
+    V.VendorName,
+    L.LocName
+HAVING 
+    COUNT(DISTINCT P.ID) > 0 OR COUNT(DISTINCT M.ID) > 0
+ORDER BY 
+    V.VendorName ASC,
+    L.LocName ASC
+
+--Query 6
+--purpose:This query retrieves the names of all parts and merchandise sold by the vendor 'Toyota'. 
+-- It does this by using nested queries to first find the ID of the vendor with the name 'Toyota', and then selecting the part names and merchandise names that correspond to that vendor ID using the UNION set operation to combine the two result sets
+-- Expected Results: A table with parts and merchandise sold by toyota.
+SELECT PartName
+FROM PART
+WHERE VendorID = (
+    SELECT ID
+    FROM VENDOR
+    WHERE VendorName = 'Toyota'
+)
+UNION
+SELECT MerchName
+FROM MERCHANDISE
+WHERE VendorID = (
+    SELECT ID
+    FROM VENDOR
+    WHERE VendorName = 'Totota'
+);
+
+--Query 7
+-- purpose: useful for customer to find parts that are made by ford and see if the part they are looking for is avaliable.
+-- expected result: Gives part name, vendor name, quantity, stock price, and location of parts made by ford.
+SELECT P.PartName, V.VendorID, S.Qty, S.Price, L.LocName
+FROM PART P
+JOIN VEHICLE V ON P.VehID = V.ID
+JOIN VENDOR VN ON P.VendorID = VN.ID
+JOIN STOCK S ON P.StockID = S.ID
+JOIN LOCSITE L ON S.LocID = L.ID
+WHERE V.VehMake = 'Ford';
+
+
+--Query 8
+-- Purpose: Can be useful for customer to find information for Toyota.
+-- Expected Result:
+SELECT 
+  INV.ID AS InvoiceID,
+  INV.InvoiceDesc AS InvoiceDesc,
+  V.VendorName AS VendorName,
+  P.PartName AS PartName,
+  P.PartDesc AS PartDesc,
+  PS.Qty AS Qty,
+  PS.Price AS Price
+FROM 
+  INVOICE INV
+  JOIN VENDOR V ON INV.VendorID = V.ID
+  JOIN STOCK PS ON INV.ID = PS.InvoiceID
+  JOIN PART P ON PS.ID = P.StockID
+  JOIN VEHICLE VEH ON P.VehID = VEH.ID
+WHERE 
+  V.VendorName = 'Toyota'
+ORDER BY 
+  INV.ID DESC;
+
+--Query 9
+-- Purpose: Can be useful for customer to see which company is doing good on sales based on parts sold and revenue.
+-- Expected Result: Displays a table that retrives total parts sold and total revenue for each vendor part.
+SELECT 
+    V.VendorName, 
+    P.PartName, 
+    SUM(S.Qty) AS TotalQtySold, 
+    SUM(S.Qty * S.Price) AS TotalRevenue
+FROM 
+    VENDOR V
+    INNER JOIN PART P ON V.ID = P.VendorID
+    INNER JOIN STOCK S ON P.StockID = S.ID
+GROUP BY 
+    V.VendorName, 
+    P.PartName
+
+
+--Query 10
+-- Purpose: Can be useful for customer to find if there are any oil filter parts, and find price and location.
+-- Expected Result: Displays a table that retrives all vendor names and location and quantity and price for oil filter part.
+SELECT p.PartName, v.VendorName, l.LocName, s.Qty, s.Price
+FROM PART p
+JOIN VEHICLE veh ON p.VehID = veh.ID
+JOIN VENDOR v ON p.VendorID = v.ID
+JOIN STOCK s ON p.StockID = s.ID
+JOIN LOCSITE l ON s.LocID = l.ID
+WHERE p.PartName = 'Oil Filter'
+ORDER BY s.Price DESC
